@@ -12,6 +12,7 @@ package uvm_clam_pkg;
     `include "uvm_clam_macros.svh"
     `include "uvm_clam.svh"
 
+    `include "uvm_clam_test_object_oop_args.svh"
     `include "uvm_clam_test_factory_override_with_args.svh"
 
 endpackage : uvm_clam_pkg

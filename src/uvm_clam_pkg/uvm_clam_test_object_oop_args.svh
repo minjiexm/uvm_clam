@@ -1,49 +1,56 @@
 `ifndef UVM_CLAM_TEST_OBJ_OOP_ARGS_SVH
 `define UVM_CLAM_TEST_OBJ_OOP_ARGS_SVH
 
-class my_config extends uvm_object;
 
-	rand int unsigned test_arg;
-
-	constraint test_arg_range {
-		test_arg < 10;
-	}
-	
-	`uvm_object_utils(my_config)
-	
-	function new(string name = "my_config");
-		super.new(name);
-	endfunction : new
-
-endclass : my_config
-
-
-class my_config_with_args extends my_config;
+class uvm_clam_args_object extends uvm_sequence;
 
 	int unsigned test_arg;
 
-	`uvm_object_utils(my_config_with_args)
+	`uvm_object_utils(uvm_clam_args_object)
 	
-	function new(string name = "my_config_with_args");
+	function new(string name = "uvm_clam_args_object");
 		super.new(name);
 	endfunction : new
 	
 	//for support factory override
-	//virtual function void set_name(string name);
-	//	super.set_name(name);
-	//	`uvm_clam_get_int_arg(test_arg, "TEST_ARG", 10, this)
-	//endfunction : set_name
-
-	function void post_randomize();
+	virtual function void set_name(string name);
+		super.set_name(name);
 		`uvm_clam_get_int_arg(test_arg, "TEST_ARG", 10, this)
-	endfunction : post_randomize
+	endfunction : set_name
 
-endclass : my_config_with_args
+endclass : uvm_clam_args_object
+
+
+class uvm_clam_args_component extends uvm_component;
+
+	int unsigned test_arg;
+
+	`uvm_component_utils(uvm_clam_args_component)
+	
+	function new(string name = "uvm_clam_args_component", uvm_component parent);
+		super.new(name, parent);	
+	endfunction : new
+
+	/****************************************************************
+	 * build_phase()
+	 ****************************************************************/
+	function void build_phase(uvm_phase phase);
+		super.build_phase(phase);		
+		`uvm_clam_get_int_arg(test_arg, "TEST_ARG", 10, this)
+	endfunction : build_phase
+	
+endclass : uvm_clam_args_component
 
 
 class uvm_clam_test_object_oop_args extends uvm_test;
 	
-	my_config cfg;
+	int unsigned test_arg;
+
+	uvm_clam_args_object args_object_1;
+	uvm_clam_args_object args_object_2;
+
+	uvm_clam_args_component args_component_1;
+	uvm_clam_args_component args_component_2;
 
 	`uvm_component_utils(uvm_clam_test_object_oop_args)
 	
@@ -54,7 +61,7 @@ class uvm_clam_test_object_oop_args extends uvm_test;
 	/****************************************************************
 	 * new()
 	 ****************************************************************/
-    function new(string name, uvm_component parent=null);
+	function new(string name, uvm_component parent=null);
 		super.new(name, parent);
 	endfunction
 
@@ -64,27 +71,18 @@ class uvm_clam_test_object_oop_args extends uvm_test;
 	function void build_phase(uvm_phase phase);
 		super.build_phase(phase);
 
-		this.cfg = my_config::type_id::create({this.get_full_name(), ".cfg"},, this.get_full_name());
-		void'(this.cfg.randomize());
-		
-		`uvm_info("TEST", $psprintf("cfg.test_arg = %0d", this.cfg.test_arg), UVM_NONE)
+		`uvm_clam_add_arg_readme("TEST_ARG", "For test purpuse")
+
+		uvm_config_db#(uvm_bitstream_t)::set(this, "args_component_2", "TEST_ARG", 15);
+
+		this.args_object_1 = uvm_clam_args_object::type_id::create({this.get_full_name(), ".args_object_1"});
+		this.args_object_2 = uvm_clam_args_object::type_id::create({this.get_full_name(), ".args_object_2"});
+        
+		this.args_component_1 = uvm_clam_args_component::type_id::create("args_component_1", this);
+		this.args_component_2 = uvm_clam_args_component::type_id::create("args_component_2", this);
+
 	endfunction : build_phase
 
-
-	/****************************************************************
-	 * connect_phase()
-	 ****************************************************************/
-	function void connect_phase(uvm_phase phase);
-		super.connect_phase(phase);
-	endfunction
-
-	/****************************************************************
-	 * run_phase()
-	 ****************************************************************/
-	task run_phase(uvm_phase phase);
-		// TODO: Launch any local behavior
-	endtask
-	
 endclass : uvm_clam_test_object_oop_args
 
 
