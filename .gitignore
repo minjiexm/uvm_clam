@@ -1,0 +1,5 @@
+sim/*log
+sim/work
+sim/vsim*
+sim/questa*
+.settings

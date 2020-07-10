@@ -1,0 +1,13 @@
+#Set current dir as CSV Home
+export PROJECT_LOC="$PWD"
+
+export QUESTA_HOME=$QUESTASIM_PATH/questasim
+export UVM_VERSION=1.1d
+export UVM_HOME=$QUESTA_HOME/verilog_src/uvm-$UVM_VERSION
+
+echo "UVM_VERSION is $UVM_VERSION"
+echo "UVM_HOME is $UVM_HOME"
+
+echo '[NOTE] Please make sure you have set UVM_HOME correctly!'
+
+# For GCC compile issue, please refer https://www.anthonyvh.com/2017/10/13/questasim_on_ubuntu/
