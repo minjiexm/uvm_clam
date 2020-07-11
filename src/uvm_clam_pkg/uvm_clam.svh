@@ -3,29 +3,27 @@
 
 class uvm_clam extends uvm_object;
 
-	static uvm_clam global_access = null;
-	
-    uvm_cmdline_processor cmdpros = uvm_cmdline_processor::get_inst();
+    protected uvm_cmdline_processor cmdpros = uvm_cmdline_processor::get_inst();
     
-    string args_readme[string];
-    
-	bit print_help = 0;
-	bit print_trace_info = 0;
-	
-    string msg_id = "TRACE_ARG";
+	protected bit print_help = 0;
+	protected bit print_trace_info = 0;
+	protected bit force_add_readme = 0;
+    protected string msg_id = "TRACE_ARG";
+
+    protected string args_readme[string];
+    protected static uvm_clam global_access = null;
 
 	`uvm_object_utils(uvm_clam)
 
 	function new(string name = "uvm_clam");
 		super.new(name);
 		
-		this.add_argument_readme("ARGS_HELP",  "Print help information for all arguments");
-		this.add_argument_readme("ARGS_TRACE", "For enable print command line arguments debug information");
+		this.add_argument_readme("CLAM_HELP",  "Print help information for all arguments");
+		this.add_argument_readme("CLAM_TRACE", "For enable print command line arguments debug information");
 
 		print_help = this.get_plus_arg("ARGS_HELP", this);
 		print_trace_info = this.get_plus_arg("ARGS_TRACE", this);
-		if(print_trace_info) print_help = 1;
-	
+		if(print_trace_info) print_help = 1;	
 	endfunction : new
 
 
@@ -47,7 +45,6 @@ class uvm_clam extends uvm_object;
 		end
 		else if(this.args_readme[argName] != readme) //try to add argument with different readme
 			`uvm_error(this.msg_id, $psprintf("[add_argument_readme argument] argument %s already exists with readme : %s", argName, this.args_readme[argName]))
-
 	endfunction : add_argument_readme
 
 
@@ -80,7 +77,7 @@ class uvm_clam extends uvm_object;
 		string locPlusArgs[$];
 		string func = "get_plus_arg";
 
-		if(!args_readme.exists(argName)) begin
+		if(force_add_readme && !args_readme.exists(argName)) begin
 			`uvm_error(this.msg_id, $psprintf("[get_plus_arg] Please use add_argument_readme to give a readme to the argument \"%s\"", argName))
 		end
 
@@ -111,9 +108,9 @@ class uvm_clam extends uvm_object;
         uvm_component component;
         string func = "get_int_arg";
         
-        //if(!args_readme.exists(argName)) begin
-        //	`uvm_error(this.msg_id, $psprintf("[%s] Please use add_argument_readme to give a readme to the argument \"%s\"", func, argName))
-        //end
+        if(force_add_readme && !args_readme.exists(argName)) begin
+        	`uvm_error(this.msg_id, $psprintf("[%s] Please use add_argument_readme to give a readme to the argument \"%s\"", func, argName))
+        end
 
         if(location != null) begin
         	locArgName = {location.get_full_name(), ".", argName};
@@ -144,9 +141,9 @@ class uvm_clam extends uvm_object;
         uvm_component component;
         string func = "get_string_arg";
 
-        //if(!args_readme.exists(argName)) begin
-        //	`uvm_error(this.msg_id, $psprintf("[%s] Please use add_argument_readme to give a readme to the argument \"%s\"", func, argName))
-        //end
+        if(force_add_readme && !args_readme.exists(argName)) begin
+        	`uvm_error(this.msg_id, $psprintf("[%s] Please use add_argument_readme to give a readme to the argument \"%s\"", func, argName))
+        end
         
         if(location != null)
         	locArgName = {location.get_full_name(), ".", argName};

@@ -18,7 +18,7 @@
 		<link>
 			<name>External SV Files</name>
 			<type>2</type>
-			<locationURI>svext://clam</locationURI>
+			<locationURI>svext://uvm_clam</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
